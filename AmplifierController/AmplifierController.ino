@@ -48,7 +48,7 @@ void setup()
   atxState = 0;
   inputCount = 0;
   loopCount = 0;
-  powerOffCountDown = 2048; //todo: change value to pass more time before receiver shuts down
+  powerOffCountDown = 256; //1 min //2048 todo: change value to pass more time before receiver shuts down
 
   irrecv.enableIRIn(); // Start the receiver
 
@@ -203,14 +203,14 @@ void loop() {
         pinMode(pinsShort, INPUT);
         break;
     }
-    delay(100);
+    delay(50); //100
     irrecv.resume(); // Receive the next value
   }
 
   if (atxState != 2) {
-    loopCount++;
-    if (loopCount % 256 == 0) { //64
-      loopCount = 0;
+    //    loopCount++;
+    if (millis() % 256 == 0) { //64
+      //      loopCount = 0;
 
       switch (atxState) {
         case 0:
@@ -223,41 +223,25 @@ void loop() {
 
           if (inputCount == 3) {
             powerOnATXandReceiver(1);
-            inputCount = 128;
+            inputCount = 0; //128
+            atxState = 1;
+            powerOffCountDown = 256;
           }
           break;
 
         case 1:
-          if (digitalRead(input) == 0) {
-            inputCount -= 1;
-          }
-          else {
-            inputCount = 128;
-          }
+          powerOffCountDown -= 1;
 
-          if (inputCount <= 0) {
-            atxState = 3;
-            inputCount = 0;
-          }
-          break;
+          inputCount += digitalRead(input);
 
-        case 3:
-          powerOffCountDown--;
-
-          if (powerOffCountDown <= 0) {
-            powerOff();
-          }
-
-          if (digitalRead(input) == 1) {
-            inputCount += 1;
-          }
-          else {
-            inputCount = 0;
-          }
-
-          if (inputCount == 10) {
-            atxState = 1;
-            inputCount = 128;
+          if (powerOffCountDown <= 0) { //& inputCount < 5
+            if (inputCount < 3) {
+              powerOff();
+            }
+            else {
+              inputCount = 0; //128
+              powerOffCountDown = 256;
+            }
           }
           break;
       }
@@ -286,6 +270,12 @@ void powerOnATXandReceiver(int atxStateNumber) {
   digitalWrite(att, LOW);
   delay(120);
   pinMode(att, INPUT);
+  //volume up
+  pinMode(volUp, OUTPUT);
+  digitalWrite(volUp, LOW);
+  delay(120);
+  pinMode(volUp, INPUT);
+  delay(120);
 }
 
 void powerOff() {
