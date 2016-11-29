@@ -38,17 +38,17 @@ int atxState;
 //2 - manual on
 //3 - pending power off
 
-int inputCount; // use for auto power on/off
-int loopCount; // use to skip checks on number of loop iterations
-int powerOffCountDown;
+//int inputCount; // use for auto power on/off
+//int loopCount; // use to skip checks on number of loop iterations
+//int powerOffCountDown;
 
 
 void setup()
 {
   atxState = 0;
-  inputCount = 0;
-  loopCount = 0;
-  powerOffCountDown = 256; //1 min //2048 todo: change value to pass more time before receiver shuts down
+  //  inputCount = 0;
+  //  loopCount = 0;
+  //  powerOffCountDown = 256; //1 min //2048 todo: change value to pass more time before receiver shuts down
 
   irrecv.enableIRIn(); // Start the receiver
 
@@ -90,7 +90,7 @@ void loop() {
         if (digitalRead(power)) {
           powerOff();
         } else {
-          powerOnATXandReceiver(2);
+          manuallyPowerOnATXandReceiver(2);
         }
         break;
 
@@ -240,18 +240,35 @@ void powerOnATXandReceiver(int atxStateNumber) {
   digitalWrite(source, LOW);
   delay(120);
   pinMode(source, INPUT);
-  //  //att
-  //  delay(500);
-  //  pinMode(att, OUTPUT);
-  //  digitalWrite(att, LOW);
-  //  delay(120);
-  //  pinMode(att, INPUT);
-  //  //volume up
-  //  pinMode(volUp, OUTPUT);
-  //  digitalWrite(volUp, LOW);
-  //  delay(120);
-  //  pinMode(volUp, INPUT);
-  //  delay(120);
+}
+
+void manuallyPowerOnATXandReceiver(int atxStateNumber) {
+  atxState = atxStateNumber;
+  digitalWrite(power, HIGH);
+  delay(2000);
+  //start the receiver
+  pinMode(source, OUTPUT);
+  digitalWrite(source, LOW);
+  delay(120);
+  pinMode(source, INPUT);
+  delay(500);
+  //att
+  delay(500);
+  pinMode(att, OUTPUT);
+  digitalWrite(att, LOW);
+  delay(120);
+  pinMode(att, INPUT);
+  //volume up
+  pinMode(volUp, OUTPUT);
+  digitalWrite(volUp, LOW);
+  delay(120);
+  pinMode(volUp, INPUT);
+  delay(120);
+  pinMode(tuneUp, OUTPUT);
+  digitalWrite(tuneUp, LOW);
+  delay(550);
+  pinMode(tuneUp, INPUT);
+  delay(120);
 }
 
 void powerOff() {
