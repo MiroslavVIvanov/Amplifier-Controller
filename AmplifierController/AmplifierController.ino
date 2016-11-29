@@ -208,40 +208,16 @@ void loop() {
   }
 
   if (atxState != 2) {
-    //    loopCount++;
-    if (millis() % 256 == 0) { //64
-      //      loopCount = 0;
-
+    if (millis() % 1000 == 0) {
       switch (atxState) {
         case 0:
-          if (digitalRead(input) == 1) {
-            inputCount += 1;
-          }
-          else {
-            inputCount = 0;
-          }
-
-          if (inputCount == 3) {
+          if (digitalRead(input)) {
             powerOnATXandReceiver(1);
-            inputCount = 0; //128
-            atxState = 1;
-            powerOffCountDown = 256;
           }
           break;
-
         case 1:
-          powerOffCountDown -= 1;
-
-          inputCount += digitalRead(input);
-
-          if (powerOffCountDown <= 0) { //& inputCount < 5
-            if (inputCount < 3) {
-              powerOff();
-            }
-            else {
-              inputCount = 0; //128
-              powerOffCountDown = 256;
-            }
+          if (!digitalRead(input)) {
+            powerOff();
           }
           break;
       }
@@ -264,18 +240,18 @@ void powerOnATXandReceiver(int atxStateNumber) {
   digitalWrite(source, LOW);
   delay(120);
   pinMode(source, INPUT);
-  //att
-  delay(500);
-  pinMode(att, OUTPUT);
-  digitalWrite(att, LOW);
-  delay(120);
-  pinMode(att, INPUT);
-  //volume up
-  pinMode(volUp, OUTPUT);
-  digitalWrite(volUp, LOW);
-  delay(120);
-  pinMode(volUp, INPUT);
-  delay(120);
+  //  //att
+  //  delay(500);
+  //  pinMode(att, OUTPUT);
+  //  digitalWrite(att, LOW);
+  //  delay(120);
+  //  pinMode(att, INPUT);
+  //  //volume up
+  //  pinMode(volUp, OUTPUT);
+  //  digitalWrite(volUp, LOW);
+  //  delay(120);
+  //  pinMode(volUp, INPUT);
+  //  delay(120);
 }
 
 void powerOff() {
